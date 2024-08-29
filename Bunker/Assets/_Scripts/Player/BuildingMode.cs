@@ -35,14 +35,7 @@ public class BuildingMode : MonoBehaviour
     {
         if (inputManager.TildePressed())
         {
-            if (isActive && selectedBuildingPartPreview != null)
-            {
-                Destroy(selectedBuildingPartPreview);
-            }
-
-            isActive = !isActive;
-
-            Debug.Log($"Building Mode is {isActive}");
+            ToggleBuildingActive();
         }
 
         if (inputManager.TabbedThisFrame())
@@ -175,6 +168,25 @@ public class BuildingMode : MonoBehaviour
         }
     }
 
+    private void ToggleBuildingActive()
+    {
+        if (isActive && selectedBuildingPartPreview != null)
+        {
+            Destroy(selectedBuildingPartPreview);
+        }
+
+        isActive = !isActive;
+    }
+
+    public void CloseBuildingMenu()
+    {
+        if (isActive)
+        {
+            ToggleBuildingActive();
+        }
+        ToggleBuildingMenu(); // Close the menu if it's open
+    }
+
     private void ToggleBuildingMenu()
     {
         bool value = buildingSelectMenu.activeSelf;
@@ -183,12 +195,23 @@ public class BuildingMode : MonoBehaviour
         Cursor.visible = !value;
 
         if (!value)
+        {
             Cursor.lockState = CursorLockMode.Confined;
+            if (!isActive) // Enable building mode if it was inactive
+            {
+                ToggleBuildingActive();
+            }
+        }
         else
+        {
             Cursor.lockState = CursorLockMode.Locked;
+            if (isActive) // Disable building mode if it was active
+            {
+                ToggleBuildingActive();
+            }
+        }
 
         canPlaceBuilding = value;
-
     }
 
     public void SelectBuildingPart(int currentPartIndex)
@@ -201,7 +224,11 @@ public class BuildingMode : MonoBehaviour
         selectedBuildingPartPreview = Instantiate(buildPreviews[currentPartIndex].gameObject, transform.position, Quaternion.identity);
         selectedBuildingPreviewMeshRenderer = selectedBuildingPartPreview.GetComponent<MeshRenderer>();
 
-        ToggleBuildingMenu();
+        ToggleBuildingMenu(); // Close the menu
+        if (!isActive) // Enable building mode if it was inactive
+        {
+            ToggleBuildingActive();
+        }
     }
 
     private void PlaceBuild(Vector3Int gridCoords, Vector3 position, Vector3 rotation)

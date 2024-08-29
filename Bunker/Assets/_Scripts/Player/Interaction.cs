@@ -2,6 +2,7 @@ using System;
 using UnityEngine;
 using Unity.Netcode;
 using Core;
+using InventorySystem.Items;
 
 public class Interaction : NetworkBehaviour
 {
@@ -16,13 +17,15 @@ public class Interaction : NetworkBehaviour
     private float interactTimer = 0f;
     private bool isInteractingWithDelayedObject = false;
     private bool hasInteractedDelayed = false;
+    private ReferenceHub referenceHub;
     private InputManager inputManager;
 
-    public event Action<RaycastHit> E_OnItemPickup;
+    public event Action<RaycastHit> OnInteract;
 
     private void Start()
     {
         inputManager = InputManager.Instance;
+        referenceHub = GetComponent<ReferenceHub>();
     }
 
     private void LateUpdate()
@@ -70,9 +73,25 @@ public class Interaction : NetworkBehaviour
 
     private void TriggerInteraction(RaycastHit hitInfo)
     {
-        IInteractable interactable = hitInfo.collider.GetComponent<IInteractable>() ?? hitInfo.collider.transform.parent.GetComponent<IInteractable>();
-        interactable?.Interact(hitInfo, NetworkObject, -1);
+        DetermineInteract(hitInfo);
     }
+
+    private void DetermineInteract(RaycastHit hitInfo)
+    {
+        if (hitInfo.collider.TryGetComponent(out IInteractable interactable))
+        {
+            interactable?.Interact(hitInfo, NetworkObject, -1);
+            return;
+        }
+        if (hitInfo.collider.TryGetComponent(out ItemBase itemBase))
+        {
+            referenceHub.inventory.ItemPickedUp(itemBase, itemBase.Amount);
+            return;
+        }
+
+        OnInteract?.Invoke(hitInfo);
+    }
+
 
     private void HandleDelayedInteraction(RaycastHit hitInfo)
     {
