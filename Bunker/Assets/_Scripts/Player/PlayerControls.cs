@@ -233,6 +233,15 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""processors"": """",
                     ""interactions"": """",
                     ""initialStateCheck"": false
+                },
+                {
+                    ""name"": ""Tilde"",
+                    ""type"": ""Button"",
+                    ""id"": ""20d26168-6e99-4fd6-aabd-e823ff3ecdc8"",
+                    ""expectedControlType"": ""Button"",
+                    ""processors"": """",
+                    ""interactions"": """",
+                    ""initialStateCheck"": false
                 }
             ],
             ""bindings"": [
@@ -664,6 +673,17 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
                     ""action"": ""R"",
                     ""isComposite"": false,
                     ""isPartOfComposite"": false
+                },
+                {
+                    ""name"": """",
+                    ""id"": ""bc9890bb-f581-4940-bc69-dbf729668e87"",
+                    ""path"": ""<Keyboard>/backquote"",
+                    ""interactions"": """",
+                    ""processors"": """",
+                    ""groups"": """",
+                    ""action"": ""Tilde"",
+                    ""isComposite"": false,
+                    ""isPartOfComposite"": false
                 }
             ]
         }
@@ -723,6 +743,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         m_Actions_Tab = m_Actions.FindAction("Tab", throwIfNotFound: true);
         m_Actions_Enter = m_Actions.FindAction("Enter", throwIfNotFound: true);
         m_Actions_R = m_Actions.FindAction("R", throwIfNotFound: true);
+        m_Actions_Tilde = m_Actions.FindAction("Tilde", throwIfNotFound: true);
     }
 
     public void Dispose()
@@ -807,6 +828,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
     private readonly InputAction m_Actions_Tab;
     private readonly InputAction m_Actions_Enter;
     private readonly InputAction m_Actions_R;
+    private readonly InputAction m_Actions_Tilde;
     public struct ActionsActions
     {
         private @PlayerControls m_Wrapper;
@@ -834,6 +856,7 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         public InputAction @Tab => m_Wrapper.m_Actions_Tab;
         public InputAction @Enter => m_Wrapper.m_Actions_Enter;
         public InputAction @R => m_Wrapper.m_Actions_R;
+        public InputAction @Tilde => m_Wrapper.m_Actions_Tilde;
         public InputActionMap Get() { return m_Wrapper.m_Actions; }
         public void Enable() { Get().Enable(); }
         public void Disable() { Get().Disable(); }
@@ -912,6 +935,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @R.started += instance.OnR;
             @R.performed += instance.OnR;
             @R.canceled += instance.OnR;
+            @Tilde.started += instance.OnTilde;
+            @Tilde.performed += instance.OnTilde;
+            @Tilde.canceled += instance.OnTilde;
         }
 
         private void UnregisterCallbacks(IActionsActions instance)
@@ -985,6 +1011,9 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
             @R.started -= instance.OnR;
             @R.performed -= instance.OnR;
             @R.canceled -= instance.OnR;
+            @Tilde.started -= instance.OnTilde;
+            @Tilde.performed -= instance.OnTilde;
+            @Tilde.canceled -= instance.OnTilde;
         }
 
         public void RemoveCallbacks(IActionsActions instance)
@@ -1045,5 +1074,6 @@ public partial class @PlayerControls: IInputActionCollection2, IDisposable
         void OnTab(InputAction.CallbackContext context);
         void OnEnter(InputAction.CallbackContext context);
         void OnR(InputAction.CallbackContext context);
+        void OnTilde(InputAction.CallbackContext context);
     }
 }

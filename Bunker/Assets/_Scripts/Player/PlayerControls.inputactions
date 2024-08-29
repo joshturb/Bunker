@@ -211,6 +211,15 @@
                     "processors": "",
                     "interactions": "",
                     "initialStateCheck": false
+                },
+                {
+                    "name": "Tilde",
+                    "type": "Button",
+                    "id": "20d26168-6e99-4fd6-aabd-e823ff3ecdc8",
+                    "expectedControlType": "Button",
+                    "processors": "",
+                    "interactions": "",
+                    "initialStateCheck": false
                 }
             ],
             "bindings": [
@@ -640,6 +649,17 @@
                     "processors": "",
                     "groups": "Keyboard",
                     "action": "R",
+                    "isComposite": false,
+                    "isPartOfComposite": false
+                },
+                {
+                    "name": "",
+                    "id": "bc9890bb-f581-4940-bc69-dbf729668e87",
+                    "path": "<Keyboard>/backquote",
+                    "interactions": "",
+                    "processors": "",
+                    "groups": "",
+                    "action": "Tilde",
                     "isComposite": false,
                     "isPartOfComposite": false
                 }

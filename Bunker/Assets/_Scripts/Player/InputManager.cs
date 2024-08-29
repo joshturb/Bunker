@@ -115,7 +115,9 @@ public class InputManager : NetworkBehaviour
     public bool RKeyPressed(){
         return playerControls.Actions.R.triggered;
     }
-
+    public bool TildePressed(){
+        return playerControls.Actions.Tilde.triggered;
+    }
 
 
 }

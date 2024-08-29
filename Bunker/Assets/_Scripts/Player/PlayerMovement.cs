@@ -137,6 +137,9 @@ public class PlayerMovement : NetworkBehaviour
 
     void CameraMovement()
     {
+        if (Cursor.lockState != CursorLockMode.Locked && Cursor.visible != false)
+            return;
+
         Vector2 lookInput = inputManager.GetMouseDelta();
 
         xRotation += -lookInput.y * sensitivity.x;

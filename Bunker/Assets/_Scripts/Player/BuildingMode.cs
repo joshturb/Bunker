@@ -9,8 +9,10 @@ public class BuildingMode : MonoBehaviour
     private int currentPartIndex = 0;
     private bool isActive;
     private float currentRotation;
+    private bool canPlaceBuilding;
 
     public LayerMask layerMask;
+    public GameObject buildingSelectMenu;
     public GameObject[] buildParts;
     public GameObject[] buildPreviews;
     private GameObject selectedBuildingPart;
@@ -31,20 +33,21 @@ public class BuildingMode : MonoBehaviour
 
     void Update()
     {
-        if (inputManager.TabbedThisFrame())
+        if (inputManager.TildePressed())
         {
             if (isActive && selectedBuildingPartPreview != null)
             {
                 Destroy(selectedBuildingPartPreview);
             }
-            else
-            {
-                SelectBuildingPart(currentPartIndex);
-            }
 
             isActive = !isActive;
 
             Debug.Log($"Building Mode is {isActive}");
+        }
+
+        if (inputManager.TabbedThisFrame())
+        {
+            ToggleBuildingMenu();
         }
 
         if (isActive)
@@ -57,21 +60,11 @@ public class BuildingMode : MonoBehaviour
                 currentRotation %= 360f; 
                 Debug.Log($"Current Rotation: {currentRotation}");
             }
-
-            if (inputManager.RKeyPressed())
-            {
-                currentPartIndex = (currentPartIndex + 1) % buildParts.Length;
-
-                SelectBuildingPart(currentPartIndex);
-
-                Debug.Log($"Selected Building Part: {selectedBuildingPart.name}");
-            }
-            
             if (Physics.Raycast(camera.transform.position, camera.transform.forward, out RaycastHit hitInfo, 10f, layerMask))
             { 
                 if (hitInfo.transform.CompareTag("Grid") || hitInfo.transform.CompareTag("Build"))
                 {
-                    Vector3 localPoint = buildingGrid.transform.InverseTransformPoint(hitInfo.point);
+                    Vector3 localPoint = buildingGrid.transform.InverseTransformPoint(hitInfo.point + Vector3.up * 1.5f);
                     Vector3Int gridCoords = new(
                         Mathf.FloorToInt((localPoint.x + (buildingGrid.gridSize * buildingGrid.cubeSize / 2f)) / buildingGrid.cubeSize),
                         Mathf.FloorToInt((localPoint.y + (buildingGrid.gridSize * buildingGrid.cubeSize / 2f)) / buildingGrid.cubeSize),
@@ -137,7 +130,7 @@ public class BuildingMode : MonoBehaviour
                         }
                     }
 
-                    if (inputManager.LeftClickPressed())
+                    if (inputManager.LeftClickPressed() && canPlaceBuilding)
                     {
                         // Check if the cube at gridCoords is not solid and doesn't already have a build
                         if (canPlaceBuild && !buildingGrid.grid[gridCoords.x, gridCoords.y, gridCoords.z].isSolid && !buildingGrid.grid[gridCoords.x, gridCoords.y, gridCoords.z].hasBuild)
@@ -182,7 +175,23 @@ public class BuildingMode : MonoBehaviour
         }
     }
 
-    private void SelectBuildingPart(int currentPartIndex)
+    private void ToggleBuildingMenu()
+    {
+        bool value = buildingSelectMenu.activeSelf;
+        buildingSelectMenu.SetActive(!value);
+
+        Cursor.visible = !value;
+
+        if (!value)
+            Cursor.lockState = CursorLockMode.Confined;
+        else
+            Cursor.lockState = CursorLockMode.Locked;
+
+        canPlaceBuilding = value;
+
+    }
+
+    public void SelectBuildingPart(int currentPartIndex)
     {
         selectedBuildingPart = buildParts[currentPartIndex];
 
@@ -191,12 +200,14 @@ public class BuildingMode : MonoBehaviour
 
         selectedBuildingPartPreview = Instantiate(buildPreviews[currentPartIndex].gameObject, transform.position, Quaternion.identity);
         selectedBuildingPreviewMeshRenderer = selectedBuildingPartPreview.GetComponent<MeshRenderer>();
+
+        ToggleBuildingMenu();
     }
 
     private void PlaceBuild(Vector3Int gridCoords, Vector3 position, Vector3 rotation)
     {
         Transform placedBuild = Instantiate(selectedBuildingPart, position, Quaternion.Euler(rotation)).transform;
-    
+        
         buildingGrid.grid[gridCoords.x,gridCoords.y,gridCoords.z].placedBuild = placedBuild;
 
         Debug.Log($"Placed Build at: {position}");
