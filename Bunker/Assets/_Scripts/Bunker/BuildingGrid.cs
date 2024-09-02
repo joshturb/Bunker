@@ -1,6 +1,7 @@
 using UnityEngine;
 using Unity.Netcode;
 using System.Collections.Generic;
+using UnityEngine.Events;
 
 namespace Core
 {
@@ -32,6 +33,9 @@ namespace Core
 
 
         List<Vector3> removedCubePositions = new();
+
+        public UnityAction<IInteractable> OnInteractionComplete {get; set;}
+
         public enum RemovalPattern
         {
             None,
@@ -233,8 +237,9 @@ namespace Core
             triangles.Add(startIndex + 2);
         }
 
-        public void Interact<T>(RaycastHit hit, NetworkObject player, T type = default)
+        public void Interact(ReferenceHub interactor, RaycastHit hit, out bool interactSuccessful)
         {
+            interactSuccessful = true;
             Vector3 localPoint = transform.InverseTransformPoint(hit.point);
             Vector3Int gridCoords = new(
                 Mathf.FloorToInt((localPoint.x + (gridSize * cubeSize / 2f)) / cubeSize),

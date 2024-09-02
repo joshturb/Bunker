@@ -2,15 +2,17 @@ using System;
 using System.Collections.Generic;
 using Unity.Netcode;
 using UnityEngine;
+using UnityEngine.Animations;
 
 public sealed class ReferenceHub : NetworkBehaviour, IEquatable<ReferenceHub>
 {
-    public InventorySystem.Inventory inventory;
+    public PlayerInventoryHolder inventory;
     public NetworkObject networkObject;
     public PlayerMovement playerMovement;
     public Interaction interaction;
     public ClientNetworkTransform clientNetworkTransform;
     public InputManager inputManager;
+	public ParentConstraint itemConstraint;
 
 	public ulong PlayerId => NetworkObject.OwnerClientId;
     public static Action<ReferenceHub> OnPlayerAdded;
@@ -66,7 +68,7 @@ public sealed class ReferenceHub : NetworkBehaviour, IEquatable<ReferenceHub>
         if (networkObject == null)
             networkObject = GetComponent<NetworkObject>();
         if (inventory == null)
-            inventory = GetComponent<InventorySystem.Inventory>();
+            inventory = GetComponent<PlayerInventoryHolder>();
         if (playerMovement == null)
             playerMovement = GetComponent<PlayerMovement>();
         if (interaction == null)

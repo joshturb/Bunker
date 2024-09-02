@@ -2,7 +2,6 @@ using System;
 using UnityEngine;
 using Unity.Netcode;
 using Core;
-using InventorySystem.Items;
 
 public class Interaction : NetworkBehaviour
 {
@@ -80,12 +79,7 @@ public class Interaction : NetworkBehaviour
     {
         if (hitInfo.collider.TryGetComponent(out IInteractable interactable))
         {
-            interactable?.Interact(hitInfo, NetworkObject, -1);
-            return;
-        }
-        if (hitInfo.collider.TryGetComponent(out ItemBase itemBase))
-        {
-            referenceHub.inventory.ItemPickedUp(itemBase, itemBase.Amount);
+            interactable?.Interact(referenceHub, hitInfo, out bool interactSuccessful);
             return;
         }
 
